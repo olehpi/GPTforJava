@@ -26,3 +26,74 @@ Set the environment variable and run:
 %set HF_TOKEN=hf_твой_токен_с_huggingface.co/settings/tokens  
 %gradlew ChatClientCh3
 ```
+
+### Slack Channel Reader – Simple Java Bot
+#### [ch03/p2Slack/ChannelReaderSlackBot.java]
+
+A minimal, standalone Java program that **fetches and beautifully prints** all messages from a public or private Slack channel within a specified date range — using the official Slack Bolt SDK (via `slack-api-client`).
+
+Perfect for:
+- Exporting meeting notes
+- Building datasets from team discussions
+- Quick channel audits or backups
+- Learning Slack API in Java
+
+### What it does
+
+1. Connects to your Slack workspace using a **Bot User OAuth Token**
+2. Pulls all messages from a given channel between two dates (UTC)
+3. For each message:
+   - Resolves the real username (not just `U123ABC`)
+   - Converts Slack timestamp (`1732790423.123456`) → human-readable date/time
+   - Prints:  
+     `User: john.doe`  
+     `Timestamp: 2025-11-27T14:27:03`  
+     `Message: Hey team, let's ship this!`
+
+Messages are displayed **in chronological order** (oldest first).
+
+### How to run (step by step)
+
+1. **Install a bot in your workspace**  
+   → https://api.slack.com/apps → Create New App → "From scratch"  
+   Give it a name like `all-ai-learning`
+
+2. **Add required scopes** (under OAuth & Permissions):
+   - `channels:history` (or `groups:history` / `im:history` depending on channel type)
+   - `users:read`
+
+3. **Install the app to your workspace** and copy the **Bot User OAuth Token** (`xoxb-...`)
+
+4. Replace the token and channel ID in the code:
+
+```
+Slack LogiIn   https://slack.com/signin 
+channel #all-ai-learning 
+%set SLACK_BOT_TOKEN=xxxx-xxxxxxxxxxxxxx-xxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+%set SLACK_CHANNEL_ID=xxxxxxxxxxxxxx 
+%gradlew ChannelReaderSlackBot
+```
+
+Set the date range (UTC!):
+
+JavaLocalDateTime startTimeUTC = LocalDateTime.of(2025, Month.NOVEMBER, 1, 0, 0);
+LocalDateTime endTimeUTC = LocalDateTime.of(2025, Month.DECEMBER, 1, 0, 0);
+
+Run the program → all messages will be printed to console
+
+Security note
+Never commit real tokens! In real projects:
+
+Use environment variables: System.getenv("SLACK_BOT_TOKEN")
+Or .properties / .env files (excluded via dotenv-java)
+
+Example output
+textUser: alice
+Timestamp: 2025-11-27T10:23:41
+Message: Morning everyone! Ready for standup?
+
+User: bob.engineer
+Timestamp: 2025-11-27T10:24:15
+Message: LGTM! Merging the PR now
+Lightweight, zero external services, works offline after token setup.
+Great starting point for Slack bots, analytics tools, or AI training data collectors.
