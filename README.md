@@ -97,3 +97,50 @@ Timestamp: 2025-11-27T10:24:15
 Message: LGTM! Merging the PR now
 Lightweight, zero external services, works offline after token setup.
 Great starting point for Slack bots, analytics tools, or AI training data collectors.
+
+### Slack Bot – Send Message Example (`ChannelReaderSlackBotAnswer`)
+#### [ch03/p2Slack/ChannelReaderSlackBotAnswer.java]
+
+A clean, production-ready Java example that **posts a message to any Slack channel** using the official Slack SDK.
+
+Perfect for:
+- Testing your bot token
+- Building notification services
+- Learning Slack API + Java in 2025
+- Starting point for AI-powered Slack bots
+
+### Features (2025 best practices)
+
+- **No hardcoded secrets** – token and channel loaded from environment variables
+- **Fail-fast design** – stops immediately with clear instructions if config is missing
+- **Git-safe** – you can commit this code without leaking tokens
+- Uses latest Slack Java SDK (`slack-api-client`)
+
+```
+I bot 2025-11-28T15:47:22.123 Rocket
+```
+
+### How to run
+```
+Slack LogiIn   https://slack.com/signin 
+channel #all-ai-learning 
+%set SLACK_BOT_TOKEN=xxxx-xxxxxxxxxxxxxx-xxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+%set SLACK_CHANNEL_ID=xxxxxxxxxxxxxx 
+%gradlew ChannelReaderSlackBotAnswer
+```
+Required Bot Scopes
+Make sure your bot has this scope:
+
+chat:write
+
+Add it at: https://api.slack.com/apps → Your App → OAuth & Permissions → Scopes
+Expected output
+```
+textMessage successfully sent to the channel!
+And in Slack you’ll see:
+```
+```
+text@YourBot
+I bot 2025-11-28T15:47:22 Rocket
+Ready to evolve into a full AI summarizer, auto-responder, or monitoring bot.
+```
