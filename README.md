@@ -144,3 +144,53 @@ text@YourBot
 I bot 2025-11-28T15:47:22 Rocket
 Ready to evolve into a full AI summarizer, auto-responder, or monitoring bot.
 ```
+
+### Telegram Echo Bot – Clean Java 2025 Example (`TelegramBotSpeakWithUser`)
+#### [ch03/p3Telegram/TelegramBotSpeakWithUser.java]
+A minimal, production-ready Telegram bot written in pure Java that **replies to every message** with:  
+`Hi, User! You told: <your text>`
+
+Perfect for:
+- Testing your Telegram Bot Token
+- Learning the official TelegramBots 7.x library (Long Polling)
+- Starting point for AI assistants, notifiers, or customer support bots
+
+### Features (2025 best practices applied)
+
+- **Zero hardcoded secrets** – token loaded from environment variable via `Utils.getRequiredEnv()`
+- **Fail-fast startup** – stops immediately with clear message if `TELEGRAM_BOT_TOKEN` is missing
+- **SLF4J logging** – no `printStackTrace()`, beautiful console output
+- **Graceful shutdown** – works forever until Ctrl+C
+- **Git-safe** – you can commit this code today without leaking tokens
+
+### How to run
+
+#### 1. Create a bot (if you don’t have one)
+Talk to @BotFather → `/newbot` → get your token like  
+`7234567890:AAHxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+#### 2. Run (Windows)
+```cmd
+set TELEGRAM_BOT_TOKEN=7234567890:AAHxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+gradlew runTelegramBot        # or your task name
+```
+3. Run  
+ You will see:
+text2025-11-28 19:15:23.456 INFO  TelegramBotSpeakWithUser - Bot started!
+Write anything to your bot in Telegram → instant reply!
+Example conversation
+You: Привет бот
+Bot: Hi, User! You told: Привет бот
+You: How are you?
+Bot: Hi, User! You told: How are you?
+Required dependencies (already in build.gradle)
+gradleimplementation 'org.telegram:telegrambots-longpolling:7.10.0'
+implementation 'org.slf4j:slf4j-simple:2.0.13'
+Code highlights
+
+Uses modern Long Polling (no webhooks, no server needed)
+try-with-resources + Thread.join() keeps bot alive forever
+Proper exception handling with SLF4J
+Ready to extend: just replace the reply text with LLM call, database, etc.
+
+One file. Zero config files. Works out of the box.
