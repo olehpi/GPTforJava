@@ -179,12 +179,13 @@ gradlew runTelegramBot        # or your task name
 text2025-11-28 19:15:23.456 INFO  TelegramBotSpeakWithUser - Bot started!
 Write anything to your bot in Telegram → instant reply!
 Example conversation
-You: Привет бот
-Bot: Hi, User! You told: Привет бот
+You: Hi my bot!
+Bot: Hi, User! You told: Hi my bot!
 You: How are you?
 Bot: Hi, User! You told: How are you?
 Required dependencies (already in build.gradle)
-gradleimplementation 'org.telegram:telegrambots-longpolling:7.10.0'
+gradle
+implementation 'org.telegram:telegrambots-longpolling:7.10.0'
 implementation 'org.slf4j:slf4j-simple:2.0.13'
 Code highlights
 
@@ -254,4 +255,40 @@ Bot replies: "You wrote: Hello"
 Check your private channel → you'll see:Message from User: Hello
 
 Done! All user messages are now logged in your private channel.
+```
+
+### Telegram → bot that automatically posts messages to your **private Telegram channel** (-100xxxxxx) with zero external services.
+#### [ch03/p3Telegram/TelegramChannelBotAddMessageToPrivateChannelById.java]
+
+
+#### What it does
+- On startup → immediately sends a welcome message to your private channel
+- Every N seconds → sends a recurring message (fully configurable)
+- When any user writes to the bot → replies to the user **and** forwards the exact message to your private channel
+- Perfect for logging, auto-announcements, reminders, habit trackers, or feeding messages into an AI pipeline
+
+#### Features
+- Works with **private channels** (no public link needed)
+- Scheduled messages using `java.util.Timer`
+- Echo-reply to users + forwarding everything to the channel
+- All secrets loaded from environment variables (GitHub-safe)
+- Professional SLF4J logging (no `System.out.println` in production code)
+- Long-polling (no webhook server required)
+
+#### Quick Start (2 minutes)
+
+1. **Create a bot**  
+   Talk to [@BotFather](https://t.me/BotFather) → `/newbot` → copy the token
+
+2. **Get your private channel ID** (starts with `-100`)
+    - Add the bot as administrator to the channel
+    - Send any message in the channel
+    - Open `https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates`
+    - Copy the `chat.id` value (e.g. `-1001789456123`)
+
+3. **Set environment variables**
+```cmd
+# Windows
+set TELEGRAM_BOT_TOKEN=123456789:AAFxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+set TELEGRAM_CHANNEL_ID=-1001789456123
 ```

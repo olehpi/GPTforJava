@@ -103,3 +103,16 @@ tasks.register('TelegramChannelBotAddMessageToPrivateChannelById', JavaExec) {
     }
 }
 
+tasks.register('TelegramChannelBotSentMessegeToPrivateChannel', JavaExec) {
+    group = 'application'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'ch03.p3Telegram.TelegramChannelBotSentMessegeToPrivateChannel'
+    if (System.getenv('TELEGRAM_BOT_TOKEN') != null) {
+        environment 'TELEGRAM_BOT_TOKEN', System.getenv('TELEGRAM_BOT_TOKEN')
+    }
+    if (System.getenv('TELEGRAM_CHANNEL_ID=') != null) {
+        environment 'TELEGRAM_CHANNEL_ID=', System.getenv('TELEGRAM_CHANNEL_ID=')
+    }
+}
+
+
