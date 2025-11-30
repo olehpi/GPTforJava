@@ -194,3 +194,64 @@ Proper exception handling with SLF4J
 Ready to extend: just replace the reply text with LLM call, database, etc.
 
 One file. Zero config files. Works out of the box.
+
+### Telegram → Private Channel Forwarder Bot (Java + Hugging Face ready)
+#### [ch03/p3Telegram/TelegramChannelBotAddMessageToPrivateChannelById.java]
+
+A lightweight, production-ready Telegram bot written in **pure Java** that:
+
+- Listens to messages from users in private chats (or groups)
+- Echoes a reply back to the user
+- **Forwards every incoming message into your private Telegram channel** (even if the channel is hidden/invite-only)
+
+Perfect for:
+- Logging all user interactions
+- Building announcement channels
+- Creating audit trails
+- Feeding messages into AI pipelines (e.g. send to Hugging Face / LLM later)
+
+Built with the official **Telegram Bots Java SDK** (2025 version) using **OkHttp** and **SLF4J**.
+
+## Features
+
+- Works with **private channels** (`-100xxxxxxxxxx` IDs)
+- No webhook setup — uses reliable long polling
+- Secure: Bot token and channel ID loaded from environment variables
+- Zero external services required
+- Easily extendable (add AI answers, filters, commands, etc.)
+
+## How to Get Your Private Channel ID (2025 method)
+
+Private channel IDs are hidden in the app. Follow this once:
+
+1. Add your bot as **administrator** to the private channel
+2. Send any message in the channel (you or anyone)
+3. Open in browser:  
+   `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates`
+4. Find the `chat.id` under `channel_post` → it will look like `-1001234567890`
+5. Use that number as `TELEGRAM_CHANNEL_ID`
+
+## Setup & Run
+
+### 1. Create a bot
+Talk to [@BotFather](https://t.me/BotFather), create a bot → get the token.
+
+### 2. Set environment variables (Windows example)
+
+```cmd
+set TELEGRAM_BOT_TOKEN=800000000:AAF-iIp1Og7MIXgkIToааааtvgnlFPqpfEg
+set TELEGRAM_CHANNEL_ID=-1001234500000
+set HF_TOKEN=hf_xxx  :: optional, for future AI features
+3. Run with Gradle
+gradlew run               :: starts the Telegram bot (default main class)
+:: or explicitly:
+gradlew TelegramChannelBotAddMessageToPrivateChannelById run
+The bot will start and stay online indefinitely.
+Try it!
+
+Message your bot in Telegram → "Hello"
+Bot replies: "You wrote: Hello"
+Check your private channel → you'll see:Message from User: Hello
+
+Done! All user messages are now logged in your private channel.
+```
