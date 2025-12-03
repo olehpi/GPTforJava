@@ -292,3 +292,40 @@ Done! All user messages are now logged in your private channel.
 set TELEGRAM_BOT_TOKEN=123456789:AAFxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 set TELEGRAM_CHANNEL_ID=-1001789456123
 ```
+
+### Audio Splitter – Precise MP3 Segmenter for Whisper / LLM Pipelines
+#### [ch04/AudioSplitter.java]
+This Java utility splits a long podcast or audio file (MP3) into fixed-length segments (default: 29 seconds) while preserving perfect audio continuity and quality — specifically designed for downstream processing with OpenAI Whisper, local transcription models, or RAG/LLM pipelines.
+
+#### Why this splitter exists
+Most simple audio splitters (like `ffmpeg -segment_time`) introduce small gaps, overlaps, or re-encoding artifacts that confuse Whisper's VAD (voice activity detection) and cause:
+- Misaligned timestamps
+- Repeated or skipped words at boundaries
+- Poor context flow when feeding chunks to LLMs
+
+This tool uses **JavaCV (FFmpegFrameGrabber + FFmpegFrameRecorder)** to perform frame-accurate, re-encode-once splitting directly from the decoded audio stream — resulting in perfectly clean, gapless segments that Whisper transcribes flawlessly end-to-end.
+
+#### Features
+- Frame-accurate cutting (no gaps, no overlaps, no silence injection)
+- Preserves original sample rate, bitrate, and stereo channels
+- Outputs high-quality MP3 segments using `libmp3lame`
+- Optimized for the famous This American Life episode #811 — "The One Place I Can't Go" (but works with any MP3)
+- Ideal segment length: ~29 seconds → fits comfortably under most Whisper context limits while maintaining narrative flow
+
+#### Input & Output
+Download the audio in the folder wsrc/main/resources/ch04/source_TheOnePlaceICantGo/: https://www.thisamericanlife.org/811/the-one-place-i-cant-go
+Input:  src/main/resources/ch04/source_TheOnePlaceICantGo/811.mp3
+→ Splits into:
+src/main/resources/ch04/target_TheOnePlaceICantGo/
+├── segment_1.mp3
+├── segment_2.mp3
+├── segment_3.mp3
+└── ...
+textEach segment is exactly 29 seconds (last one may be shorter).
+
+#### Perfect companion for
+- Local Whisper (faster-whisper, whisper.cpp, Insanely Fast Whisper)
+- RAG pipelines over long-form podcasts
+- Dataset creation for fine-tuning speech models
+
+Just run `AudioSplitter.main()` → get clean chunks → feed to your `docker compose` Whisper pipeline → get perfect full transcript.
