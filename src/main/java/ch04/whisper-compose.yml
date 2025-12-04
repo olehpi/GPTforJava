@@ -1,0 +1,26 @@
+services:
+  whisper:
+    image: nosana/whisper:latest
+    container_name: whisper_transcriber
+    volumes:
+      - ../../resources/ch04/target_TheOnePlaceICantGo:/audio
+    command: >
+      bash -c '
+        mkdir -p /audio/texts &&
+        rm -f /audio/texts/full_transcript.txt &&
+        for f in /audio/*.mp3; do
+          name=$$(basename "$$f");
+          base=$${name%.mp3};
+          echo Processing $$name ...;
+
+          # Run Whisper and capture stdout into file
+          python openai-whisper.py -p /audio/$$name -o /dev/null 2>/dev/null |
+            sed -E "s/\\[[0-9]{2}:[0-9]{2}\\.[0-9]{3} --> [0-9]{2}:[0-9]{2}\\.[0-9]{3}\\][[:space:]]*//g" \
+            > /audio/texts/$${base}_output.txt;
+
+          # Append to full transcript
+          cat /audio/texts/$${base}_output.txt >> /audio/texts/full_transcript.txt;
+          echo "" >> /audio/texts/full_transcript.txt;
+        done;
+        echo Done!
+      '

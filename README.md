@@ -355,3 +355,52 @@ and saves clean, timestamp-free text into
 cd src\main\java\ch04\whisper\bat
 run_whisper.bat
 ```
+
+### Whisper Transcription Service
+**File:** `ch04/whisper-compose.yml`
+
+```yaml
+services:
+  whisper:
+    image: nosana/whisper:latest
+    container_name: whisper_transcriber
+    volumes:
+      - ./resources/ch04/target_TheOnePlaceICantGo:/audio
+    command: >
+      bash -c '
+        mkdir -p /audio/texts &&
+        rm -f /audio/texts/full_transcript.txt &&
+        for f in /audio/*.mp3; do
+          name=$(basename "$f")
+          base=${name%.mp3}
+          echo "Processing $name ..."
+
+          python openai-whisper.py -p /audio/$name -o /dev/null 2>/dev/null |
+            sed -E "s/\$$ ([0-9]{2}:){2}[0-9]{3} --> ([0-9]{2}:){2}[0-9]{3}\ $$[[:space:]]*//g" \
+            > /audio/texts/${base}_output.txt
+
+          cat /audio/texts/${base}_output.txt >> /audio/texts/full_transcript.txt
+          echo "" >> /audio/texts/full_transcript.txt
+        done
+        echo "Done!"
+      '
+```      
+#### What it does
+Automatically transcribes all .mp3 files located in
+resources/ch04/target_TheOnePlaceICantGo using OpenAI Whisper inside a Docker container.
+#### Output
+When finished, you’ll find inside resources/ch04/target_TheOnePlaceICantGo:
+texttexts/
+├── some_segment_output.txt
+├── another_part_output.txt
+├── …
+└── full_transcript.txt   # complete concatenated transcript
+How to run (exactly the command you use)
+From the project root (where whisper-compose.yml lives):
+
+#### Run
+docker compose -f whisper-compose.yml up
+
+Or simply (Docker Compose v2+ automatically finds the file if it has the standard name):
+Bashdocker compose up whisper
+Just drop your .mp3 files into resources/ch04/target_TheOnePlaceICantGo, run the command, wait for the Done! message in the logs, and your clean text transcripts will be ready. No extra flags or paths needed!
