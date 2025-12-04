@@ -329,3 +329,29 @@ textEach segment is exactly 29 seconds (last one may be shorter).
 - Dataset creation for fine-tuning speech models
 
 Just run `AudioSplitter.main()` → get clean chunks → feed to your `docker compose` Whisper pipeline → get perfect full transcript.
+
+
+### Whisper Transcription Script (Chapter 04)
+**Location:** `src/main/java/ch04/whisper/bat/`
+
+#### What it does
+Automatically transcribes **all** `.mp3` files located in  
+`src/main/resources/ch04/target_TheOnePlaceICantGo/`  
+and saves clean, timestamp-free text into  
+`src/main/resources/ch04/target_TheOnePlaceICantGo/texts/`
+
+#### Output files (created inside `texts/` folder)
+- `segment_1_output.txt`, `segment_2_output.txt`, … – one transcript per audio segment
+- `full_transcript.txt` – complete merged transcript with a blank line between each segment
+
+#### How to run
+1. Make sure **Docker Desktop** is running
+2. The required image `nosana/whisper:latest` must already be present locally  
+   (it was downloaded the first time you ever used this script – no further downloads needed)
+3. Simply **double-click** `run_whisper.bat`  
+   or run it from a terminal:
+
+```bat
+cd src\main\java\ch04\whisper\bat
+run_whisper.bat
+```
