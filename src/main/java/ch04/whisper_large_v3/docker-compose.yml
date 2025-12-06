@@ -1,0 +1,16 @@
+services:
+  whisper:
+    container_name: whisper-v3
+    image: whisper-v3:latest
+    build: .
+    restart: "no"
+    user: "root"
+
+    volumes:
+      - "${CONFIG_PATH}:/app/config.json"
+      - "${AUDIO_PATH}:/app/audio"
+
+    stdin_open: true
+    tty: true
+    command: ["--config", "/app/config.json"]
+# docker compose --env-file custom.env up

@@ -1,0 +1,13 @@
+# Core dependencies
+transformers>=4.35.0
+librosa>=0.10.0
+numpy>=1.24.0
+
+# Torch is pre-installed manually in Dockerfile (CPU-only)
+# torch>=2.0.0
+# torchaudio>=2.0.0
+
+# Additional utilities
+tqdm>=4.65.0
+pandas>=2.0.0
+python-dotenv>=1.0.0

@@ -1,0 +1,45 @@
+# -------------------------------------
+# Python cache
+# -------------------------------------
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE / Editor configs
+.idea/
+.vscode/
+*.iml
+
+# System / OS files
+.DS_Store
+Thumbs.db
+
+# -------------------------------------
+# Model & HuggingFace cache (DO NOT SEND TO DOCKER CONTEXT)
+# -------------------------------------
+# docker-cache/  I rem it because need to copy model
+huggingface/
+hf_cache/
+hf_cache.py
+
+# -------------------------------------
+# Audio, output, logs
+# -------------------------------------
+audio/
+output/
+logs/
+tmp/
+temp/
+
+# -------------------------------------
+# Build folders
+# -------------------------------------
+dist/
+build/
+.cache/

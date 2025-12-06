@@ -1,0 +1,19 @@
+{
+  "audio_dir": "/app/audio",
+  "output_subdir": "transcripts",
+  "model_id": "openai/whisper-large-v3",
+  "sampling_rate": 16000,
+
+  "generate_kwargs": {
+    "task": "transcribe",
+    "language": "en",
+    "temperature": 0.1,
+    "num_beams": 3
+  },
+
+  "feature_extractor_kwargs": {
+    "return_attention_mask": true,
+    "do_normalize": true,
+    "padding": true
+  }
+}

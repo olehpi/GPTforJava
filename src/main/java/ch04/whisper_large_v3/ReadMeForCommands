@@ -1,0 +1,51 @@
+Structure for Docker:
+whisper_large_v3/
+├── audio/                    # ← Put your audio files here
+│   └── (your audio files)
+├── output/                   # ← Transcripts will appear here
+├── config-docker.json        # Docker-specific config
+├── config.json              # Local dev config (optional)
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── main.py
+├── config.py
+├── input_output_manager.py
+├── statistics_report.py
+└── text_formatter.py
+
+How to use:
+1. Build the image:
+# Navigate to project root
+cd E:\A\ai\whisper_large_v3
+
+# Delete Docker image if it needs
+docker rmi whisper-v3:latest
+
+# check the containers that are running
+docker ps -a
+
+# Stop container if it needs
+docker stop container-name
+
+# Delete container if it needs
+docker rm container-id
+
+# Build Docker image
+docker build -t whisper-v3 .
+
+# check image
+docker images
+docker images whisper-v3  # if name is known
+
+# Run docker
+docker run --rm --user root -v "your full path to whisper_large_v3\config.json:/app/config.json" -v "your full path to GPTforJava\src\main\resources\ch04\target_TheOnePlaceICantGo:/app/audio" whisper-v3
+
+# run app locally
+python main.py --config ..\..\config-local.json
+
+# Run Docker Compose project and substitute all the variables from the custom.env file.
+docker compose --env-file custom.env up
+docker compose --env-file custom.env up --build
+
+

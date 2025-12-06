@@ -404,3 +404,70 @@ docker compose -f whisper-compose.yml up
 Or simply (Docker Compose v2+ automatically finds the file if it has the standard name):
 Bashdocker compose up whisper
 Just drop your .mp3 files into resources/ch04/target_TheOnePlaceICantGo, run the command, wait for the Done! message in the logs, and your clean text transcripts will be ready. No extra flags or paths needed!
+
+### Whisper Large v3 – Production-Ready Speech-to-Text Transcription
+#### [src/main/java/ch04/whisper_large_v3]
+A clean, fully-featured, ready-to-use Python project for transcribing any number of audio files with OpenAI’s **whisper-large-v3** (the best open-source ASR model as of 2025).
+
+Works both locally (Windows) and inside an optimized Docker container (CPU-only, ~3 GB image).
+
+### Features
+- Zero-hassle model loading (`low_cpu_mem_usage=True`, `safetensors`, float16 on GPU)
+- Full configuration via JSON with validation
+- Detailed per-file metadata, statistics and processing report
+- Nicely formatted transcripts (sentence splitting, optional line wrapping, paragraph breaks)
+- One-click Windows batch script (`run-my-audio.bat`)
+- All transcripts + single consolidated `ALL_TRANSCRIPTS.txt`
+- Smart Hugging Face cache redirection (`E:/cach/huggingface`) – never fills your C: drive
+- Production-grade Docker image (python:3.12-slim + pre-bundled model + non-root user)
+
+### Project structure
+whisper_large_v3/
+├── src/
+│   └── whisper_app/
+│       ├── main.py                  # Entry point
+│       ├── config.py                # JSON config loading + validation
+│       ├── hf_cache.py              # Moves HF cache to E:/cach/huggingface (local dev only)
+│       ├── input_output_manager.py  # Audio discovery & summary file creation
+│       ├── statistics_reports.py    # Stats generation
+│       └── text_formatter.py        # Beautiful transcript formatting
+├── audio/                               # ← drop your .mp3/.wav/.flac files here
+├── output/transcripts/                  # ← results appear here
+├── config.json                          # Default config (used in Docker)
+├── config-local.json                    # Local development override
+├── run-my-audio.bat                     # One-click Windows launcher
+├── Dockerfile                           # Optimized CPU image with baked-in model
+├── requirements.txt
+└── .dockerignore
+text### Quick start (Windows local)
+
+1. Install dependencies once:
+   ```bash
+   pip install -r requirements.txt
+
+Put your audio files into
+E:\A\**GPTforJava**\src\main\resources\ch04\target_TheOnePlaceICantGo
+Double-click run-my-audio.bat or run:Bashpython src/whisper_app/main.py --config config-local.json
+
+Docker (recommended for clean environment)
+Bash# Build (only the first time)
+docker build -t whisper-v3 .
+
+# Run on your audio folder (one-click batch file does exactly this)
+docker run --rm --user root ^
+-v "E:\A\ai\whisper_large_v3\config.json:/app/config.json" ^
+-v "E:\A\ai\GPTforJava\src\main\resources\ch04\target_TheOnePlaceICantGo:/app/audio" ^
+whisper-v3
+Transcripts + ALL_TRANSCRIPTS.txt + PROCESSING_STATS.txt will appear in …\target_TheOnePlaceICantGo\transcripts\.
+Customization
+Edit config.json or config-local.json:
+JSON{
+"audio_dir": "/app/audio",
+"model_id": "openai/whisper-large-v3",
+"generate_kwargs": {
+"language": "en",      // null = auto-detect
+"task": "transcribe",  // or "translate" (to English)
+"temperature": 0.1,
+"num_beams": 3
+}
+}
