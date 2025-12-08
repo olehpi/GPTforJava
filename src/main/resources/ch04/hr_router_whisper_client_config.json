@@ -1,0 +1,8 @@
+{
+  "audio_dir": "src/main/resources/ch04/target_TheOnePlaceICantGo/",
+  "output_dir": "src/main/resources/ch04/target_TheOnePlaceICantGo/transcripts/",
+
+  "options": {
+    "wait_for_model": true
+  }
+}

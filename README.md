@@ -330,6 +330,9 @@ textEach segment is exactly 29 seconds (last one may be shorter).
 
 Just run `AudioSplitter.main()` → get clean chunks → feed to your `docker compose` Whisper pipeline → get perfect full transcript.
 
+#### How to run
+Go to GPTforJava\go.bat
+go ch04.AudioSplitter
 
 ### Whisper Transcription Script (Chapter 04)
 **Location:** `src/main/java/ch04/whisper/bat/`
@@ -471,3 +474,40 @@ JSON{
 "num_beams": 3
 }
 }
+
+### Hugging Face Whisper Client (Java + OkHttp)
+#### [ch04/HFRouterWhisperClient.java]
+
+
+A set of audio utilities and Hugging Face / Whisper integrations: Java clients and utilities for preparing, splitting and batch-transcribing audio files, plus bot examples (Slack / Telegram). Supports local and cloud scenarios (Docker, Hugging Face Inference Router).
+
+#### Key features
+Sends raw MP3 bytes (Content-Type: audio/mpeg) — exactly as required by the current HF router
+Handles all known response formats ("text", "generated_text", array format)
+Automatic 15-second delay between requests (respects free-tier rate limits)
+Enforces 25 MB file size limit
+Saves individual .txt transcriptions + one merged combined_transcription.txt
+Word-wrapping at 120 characters in the combined file for easy reading
+Skips already-transcribed files
+Cleans and recreates the output folder on every run
+Reads input/output paths from a JSON config file
+Full SLF4J logging
+
+#### Requirements
+Java 11+
+HF_TOKEN environment variable set with your Hugging Face access token
+MP3 files placed in the specified folder
+Maven/Gradle (dependencies listed below)
+
+#### Quick start
+set HF_TOKEN=hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+go ch04.HFRouterWhisperClient E:\A\ai\GPTforJava\src\main\resources\ch04\hr_router_whisper_client_config.json
+ch04/hr_router_whisper_client_config.json
+{
+   "audio_dir": "src/main/resources/ch04/target_TheOnePlaceICantGo/",
+   "output_dir": "src/main/resources/ch04/target_TheOnePlaceICantGo/transcripts/",
+   "options": {"wait_for_model": true }
+}
+
+#### Security
+- Never commit real tokens. Use `HF_TOKEN` via environment variables or a secret manager.

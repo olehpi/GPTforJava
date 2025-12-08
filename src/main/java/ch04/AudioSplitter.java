@@ -13,7 +13,7 @@ public class AudioSplitter {
 		// Download the audio in the folder with inputFilePath: https://www.thisamericanlife.org/811/the-one-place-i-cant-go
     	String inputFilePath = "src/main/resources/ch04/source_TheOnePlaceICantGo/811.mp3";
     	String outputDirectory = "src/main/resources/ch04/target_TheOnePlaceICantGo/";
-    	int segmentDurationInSeconds = 29;
+    	int segmentDurationInSeconds = 60;
 
     	try (FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputFilePath)) {
         	grabber.start();
@@ -26,7 +26,7 @@ public class AudioSplitter {
         	int segmentNumber = 1;
 
         	while (segmentStartTime < totalDurationInSeconds) {
-            	String outputFilePath = outputDirectory + "segment_" + segmentNumber + ".mp3";
+            	String outputFilePath = outputDirectory + "segment_" + String.format("%05d", segmentNumber) + ".mp3";
 
             	try (FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(outputFilePath, 0)) {
                 	recorder.setAudioChannels(2);
