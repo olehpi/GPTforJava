@@ -553,3 +553,68 @@ Notes
 - The script caches models in the local Hugging Face cache to avoid repeated downloads.
 - Adjust `torch` device settings (CPU / CUDA) depending on your hardware.
 - For large models and fast results, run on a GPU with sufficient VRAM or use a lightweight checkpoint.
+
+### Discord tech Support Bot – Simple JDA Example
+#### [ch05\TechSupportBotDumb.java]
+
+Short description
+- A simple tech-support example implemented with JDA.
+- Listens for support-related messages (DMs or guild mentions) and replies with canned support/help responses.
+- Demonstrates handling `MessageReceivedEvent`, sending replies, and basic intent configuration.
+
+Key details
+- Requires environment variable: `DISCORD_BOT_TOKEN`.
+- Typical required Gateway Intents: `GUILD_MESSAGES`, `DIRECT_MESSAGES`, `MESSAGE_CONTENT`.
+- Intended as an educational/example bot — not production-ready. Extend with command parsing, rate-limiting, and secure configuration for real use.
+
+How to run
+- From IDE: run main class `ch05.TechSupportBotDumb`.
+- From Gradle (example): `gradle run -PmainClass=ch05.TechSupportBotDumb`.
+- Ensure the bot is invited with appropriate permissions to read/send messages in relevant channels or to receive DMs.
+
+Notes
+- Add logging and exception handling for robust operation.
+- Consider using a command framework or slash commands for better UX and permission handling.
+- Test in a private server before deploying to production.
+- Extend with real support logic, knowledge base integration, or AI-powered responses as needed.
+
+#### `ch05/TechSupportBotDumb` — run
+
+How to run (examples):
+- From project root using the project's `go` helper:
+  ```bash
+  go ch05.TechSupportBotDumb
+  ```bash
+  
+
+#### Discord Content Moderator Bot – Simple JDA Example
+#### [ch05\ContentModeratorBotDumb.java]
+
+Short description
+- A minimal Discord moderation example using JDA (Java Discord API).
+- Monitors guild messages and removes messages containing a configurable banned word (default: `puppies`).
+- Sends a follow-up notification mentioning the author after deletion, or informs when the bot lacks permissions.
+
+Key details
+- Requires environment variable: `DISCORD_BOT_TOKEN`.
+- Required Gateway Intents: `GUILD_MESSAGES`, `MESSAGE_CONTENT`, plus optional `GUILD_MEMBERS` and `GUILD_MODERATION` used in the example.
+- The bot checks for the `MESSAGE_MANAGE` permission before attempting to delete messages to avoid `InsufficientPermissionException`.
+- Uses `Activity.playing(...)` for presence (compatibility with JDA versions that do not expose `customStatus`).
+
+How to run
+- From IDE: run main class `ch05.ContentModeratorBotDumb`.
+- From Gradle (example): `gradle run -PmainClass=ch05.ContentModeratorBotDumb` (or configure the `application` plugin mainClass).
+- Make sure the bot has appropriate permissions in the server or channel (grant `Manage Messages` role/permission).
+
+Notes
+- Adjust `bannedWord` variable inside the class or extend logic to load from config.
+- Test on a private server before deploying to production to validate permission behavior.
+
+#### `ch05/ContentModeratorBotDumb` — run
+
+How to run (examples):
+- From project root using the project's `go` helper:
+  ```bash
+  go ch05.ContentModeratorBotDumb
+  ```bash
+
