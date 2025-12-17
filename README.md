@@ -511,3 +511,45 @@ ch04/hr_router_whisper_client_config.json
 
 #### Security
 - Never commit real tokens. Use `HF_TOKEN` via environment variables or a secret manager.
+
+
+### Text to Image
+#### [ch04\whisper_large_v3\src\whisper_app\text_to_image.py.java]
+
+Short description
+- This script generates an image using Stable Diffusion (v1.5) via the `diffusers` library.
+- It downloads or loads the model from the Hugging Face cache and produces an image from a text prompt.
+
+Dependencies
+- Python 3.8+
+- `torch`
+- `diffusers`
+- `transformers` (if required by your `diffusers` pipeline)
+- `accelerate` (optional, for optimized inference)
+
+Environment variables (Windows)
+- `HF_HOME` — root of the Hugging Face cache (example):
+  `set HF_HOME=E:\cach\huggingface`
+- `HF_HUB_CACHE` — model cache folder inside `HF_HOME` (example):
+  `set HF_HUB_CACHE=E:\cach\huggingface\hub`
+- (Optional) `HF_TOKEN` — if accessing private models
+
+How to run
+1. Install dependencies:
+   `pip install torch diffusers transformers`
+2. Set required environment variables (see above).
+3. Run the script:
+   `python E:\A\ai\GPTforJava\src\main\java\ch04\whisper_large_v3\src\whisper_app\text_to_image.py`
+
+Configurable parameters (inside the script)
+- `prompt` — the text prompt to generate the image
+- `negative_prompt` — negative prompt to reduce unwanted features
+- `num_inference_steps`, `guidance_scale` — sampling options
+- `width`, `height` — output image size
+- `seed` / `generator.manual_seed(...)` — deterministic output
+- `output_file` — path where the generated image is saved
+
+Notes
+- The script caches models in the local Hugging Face cache to avoid repeated downloads.
+- Adjust `torch` device settings (CPU / CUDA) depending on your hardware.
+- For large models and fast results, run on a GPU with sufficient VRAM or use a lightweight checkpoint.
