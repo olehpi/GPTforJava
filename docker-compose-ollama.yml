@@ -1,0 +1,42 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - E:/cach/ollama:/root/.ollama
+    restart: unless-stopped
+
+  techsupport-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile-ollama
+    container_name: techsupport-discord-bot
+    depends_on:
+      - ollama
+    environment:
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+    restart: unless-stopped
+
+
+######## ------------------------------------------------------------
+# set DISCORD_BOT_TOKEN=7WSYNyXtfDY.....
+### ---------- remove containers
+# docker compose -f docker-compose-ollama.yml down
+### ---------- remove containers and volumes
+# docker compose -f docker-compose-ollama.yml down -v
+### ---------- run containers
+# docker compose -f docker-compose-ollama.yml up --build -d
+# docker compose -f docker-compose-ollama.yml up -d
+### ----------  rebuild containers without cache
+# docker compose -f docker-compose-ollama.yml up -d --build --no-cache
+### ----------  check status
+# docker compose -f docker-compose-ollama.yml ps
+### ----------  view logs
+# docker compose -f docker-compose-ollama.yml logs -f
+
+### ----------    download model llama3.2:1b
+#    docker compose -f docker-compose-ollama.yml up -d
+#    docker exec -it ollama ollama pull llama3.2:1b
+#    docker compose -f docker-compose-ollama.yml down

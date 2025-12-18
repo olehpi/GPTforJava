@@ -36,6 +36,8 @@ dependencies {
     implementation 'org.bytedeco:javacv-platform:1.5.10'  // includes FFmpeg
     implementation 'net.dv8tion:JDA:5.0.0-beta.13'        // JDA version
 
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
 }
 
 test {
@@ -123,6 +125,25 @@ tasks.register('TelegramChannelBotSentMessegeToPrivateChannel', JavaExec) {
     }
     if (System.getenv('TELEGRAM_CHANNEL_ID=') != null) {
         environment 'TELEGRAM_CHANNEL_ID=', System.getenv('TELEGRAM_CHANNEL_ID=')
+    }
+}
+
+tasks.register('botFatJar', Jar) {
+    group = 'build'
+    description = 'Creates a fat JAR for Docker with all dependencies'
+
+    archiveFileName = 'bot.jar'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes 'Main-Class': 'ch06.ollama.TechSupportOllamaBot'
+    }
+
+    from sourceSets.main.output
+
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
     }
 }
 

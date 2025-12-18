@@ -618,3 +618,93 @@ How to run (examples):
   go ch05.ContentModeratorBotDumb
   ```bash
 
+### TechSupportOllamaBot – Discord Tech Support Bot powered by Ollama (Local LLM)
+#### ch06/ollama/TechSupportOllamaBot.java
+
+#### How to run (first way: via Docker Compose)
+1. Make sure you have **Docker Desktop** installed and running.
+2. Create the folder `E:\cach\ollama` on your disk to store Ollama models.
+3. Set the environment variable with your Discord bot token:
+4. ```cmd
+   set DISCORD_BOT_TOKEN=7WSYNyXtfDY.....
+   ```
+5. From the project root (where `docker-compose-ollama.yml` is located), run:
+```cmd
+docker compose -f docker-compose-ollama.yml up --build
+```
+This command does the following:
+- Builds the **tech support bot** Docker image from the local Dockerfile.
+- Pulls the latest **Ollama** image from Docker Hub.
+- Creates and starts two containers:
+    - `ollama` — runs the Ollama LLM server, exposing port 11434.
+    - `techsupport-discord-bot` — runs the Java Discord bot, connecting to the Ollama server.
+- Both containers share a Docker network for communication.
+- The Ollama models are stored in `E:\cach\ollama` on your host machine.
+  - to pull the `llama3.2:1b` model into Ollama, run:
+    ```cmd
+    docker compose -f docker-compose-ollama.yml up -d
+    docker exec -it ollama ollama pull llama3.2:1b
+    docker compose -f docker-compose-ollama.yml down
+    ```
+
+- The bot connects to Ollama at `http://ollama:11434/v1/chat/completions` inside the Docker network.
+- Logs from both containers are displayed in your terminal.
+- You can stop the setup with Ctrl+C.
+- The first time you run this, Ollama will download the `llama3.2:1b` model into `E:\cach\ollama`, which may take some time depending on your internet speed.
+- Once running, the bot listens for messages in Discord and responds using the Ollama LLM.
+
+#### Commands to stop and remove containers
+docker compose -f docker-compose-ollama.yml down
+                Stops both running containers (ollama and techsupport-discord-bot).
+                Deletes the containers.
+                Deletes the created project Docker network.
+                Does NOT touch the Ollama models—they remain in the E:\cach\ollama folder.
+                Does NOT touch the Docker images—they remain, so the next launch will be quick.
+docker compose -f docker-compose-ollama.yml down -v
+                Additionally deletes the Ollama model cache volume.
+                Use this if you want to free up disk space and re-download models later.
+rmdir /s /q E:\cach\ollama
+                Deletes the Ollama model cache folder from your disk.
+                Use this if you want to free up disk space and re-download models later.
+docker images
+                Lists all Docker images on your machine.
+                Use this to find and delete unused images if you want to free up disk space.
+docker image rm ollama/ollama:latest
+                Deletes the **Ollama** Docker image from your machine.
+                Use this if you want to free up disk space; it will be re-downloaded on next use.
+docker image rm gptforjava-techsupport-bot
+                Deletes the **tech support bot** Docker image from your machine.
+                Use this if you want to free up disk space; it will be rebuilt on next use.
+
+
+**Second way to run (local Java + Ollama installed separately)**
+Use this if you want to run Ollama separately (e.g., via Docker) and just start the Java bot locally.
+private final String endpoint = "http://localhost:11434/v1/chat/completions"; // for go ch06.ollama.TechSupportOllamaBot Ollama local endpoint
+
+set DISCORD_BOT_TOKEN=7WSYNyXtfDY.....
+
+go ch06.ollama.TechSupportOllamaBot 
+This starts only the Java bot, which connects to your locally running Ollama instance at `http://localhost:11434`.
+
+docker stop ollama
+This stops the Ollama container if it was started via Docker Compose.
+
+docker rm ollama
+This removes the Ollama container if it was started via Docker Compose.
+
+docker run -d --name ollama -p 11434:11434 -v E:/cach/ollama:/root/.ollama ollama/ollama
+This starts Ollama in a separate container if you want to run it independently of the bot.
+    Command breakdown:
+    -d — runs the container in the background (detached).
+    --name ollama — the container name.
+    -p 11434:11434 — port forwarding from the host to the container.
+    -v E:/cach/ollama:/root/.ollama — mounts the host model folder inside the container.
+    ollama/ollama — the actual image being launched.
+
+docker exec -it ollama ollama pull llama3.2:1b
+This pulls the `llama3.2:1b` model into your Ollama instance if you haven’t done so yet.
+
+docker exec -it ollama ollama list
+This lists all models currently available in your Ollama instance.
+
+
