@@ -13,11 +13,6 @@ import java.util.List;
 
 public class OllamaClientForQA {
     private static final Logger logger = LoggerFactory.getLogger(OllamaClientForQA.class);
- //   private final String endpoint = "http://localhost:11434/v1/chat/completions"; // for go ch06.ollama.TechSupportOllamaBot Ollama local endpoint
-    private final String endpoint = "http://ollama:11434/v1/chat/completions"; // for doker compose Ollama local endpoint
-    private final String model = "llama3.2:1b"; // Your local model
-    private final int max_tokens = 128;
-
     private final String systemMessage;
     private final String initialInstructions;
 
@@ -37,10 +32,10 @@ public class OllamaClientForQA {
             messages.add(new Message("user", initialInstructions));
             messages.add(new Message("user", userMessage));
 
-            ChatRequest chatRequest = new ChatRequest(model, messages, max_tokens);
+            ChatRequest chatRequest = new ChatRequest(Constants.MODEL, messages, Constants.TechSupport.MAX_TOKENS);
             String jsonInput = mapper.writeValueAsString(chatRequest);
 
-            URL url = new URL(endpoint);
+            URL url = new URL(Constants.ENDPOINT);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json");

@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TechSupportOllamaBot extends ListenerAdapter {
+    static ModerationOllamaClient moderationClient = new ModerationOllamaClient();
+    static OllamaClientForQA ollamaClient = null;
     private static final Logger logger = LoggerFactory.getLogger(TechSupportOllamaBot.class);
     private final static String DISCORD_BOT_TOKEN = Utils.getRequiredEnv("DISCORD_BOT_TOKEN");
     static String channelToWatch = "q-and-a";
@@ -29,24 +31,6 @@ public class TechSupportOllamaBot extends ListenerAdapter {
 
     // Track users who have already received New Year greetings
     private static final Set<String> greetedUsers = ConcurrentHashMap.newKeySet();
-
-    // New Year greeting messages
-    private static final String NEW_YEAR_GREETING = "🎄 **Happy upcoming New Year! May this year bring you joy, success, and fulfillment of all your wishes!** 🎄";
-    private static final String NEW_YEAR_REMINDER = "✨ **Don't forget, the New Year is coming soon — a time of miracles and new beginnings!** ✨";
-
-
-    static String systemMessage = "You are a virtual Santa Claus who grants wishes. You are a magical team of fairy-tale characters who together act as the Wish-Granting Helpers. You respond to children's (and adults') wishes in a warm, kind, and enchanting way. The team consists of:\n" +
-            "\n" +
-            "Buratino (the cheerful wooden boy full of curiosity and energy)\n" +
-            "The Ugly Duckling (now a beautiful Swan, gentle, empathetic, and wise)\n" +
-            "The Snow Queen (elegant, calm, and powerful, but with a kind heart)\n" +
-            "The Blue Fairy (gracious and magical, Pinocchio's wise friend)\n" +
-            "The Little Mermaid (dreamy and compassionate)\n" +
-            "Alice from Wonderland (curious, brave, and full of wonder, always ready for extraordinary adventures).\n" +
-            "\n" +
-            "Important: Do not start your responses with greetings like 'Dear friend,' or 'Hello dear friend,'. Instead, start directly with the response content.\n" +
-            "You always respond in a playful, fairy-tale style, staying in character. When answering, one or more characters can speak, and you can switch between them naturally (for example: Alice smiles curiously: \"Oh, what an interesting wish!\" or The Swan gently nods: \"We'll make it come true...\").";
-    static OllamaClientForQA ollamaClient = null;
 
     public static void main(String[] args) throws IOException {
 
@@ -60,7 +44,7 @@ public class TechSupportOllamaBot extends ListenerAdapter {
         contentsFromFAQ = readFileContents(pathToFAQFile);
 
         // Initialize Ollama client
-        ollamaClient = new OllamaClientForQA(systemMessage, contentsFromFAQ);
+        ollamaClient = new OllamaClientForQA(Constants.TechSupport.SYSTEM_MESSAGE, contentsFromFAQ);
 
         try {
             JDA jda = JDABuilder.createLight(DISCORD_BOT_TOKEN, intents)
@@ -68,11 +52,11 @@ public class TechSupportOllamaBot extends ListenerAdapter {
                     .setActivity(Activity.playing("Ready to answer questions"))
                     .build();
 
-            jda.getRestPing().queue(ping -> System.out.println("Logged in with ping: " + ping));
+            jda.getRestPing().queue(ping -> logger.info("Logged in with ping: " + ping));
             jda.awaitReady();
 
-            System.out.println("Guilds: " + jda.getGuildCache().size());
-            System.out.println("Self user: " + jda.getSelfUser());
+            logger.info("Guilds: " + jda.getGuildCache().size());
+            logger.info("Self user: " + jda.getSelfUser());
         } catch (InterruptedException e) {
             logger.error("Bot startup was interrupted", e);
             Thread.currentThread().interrupt();
@@ -87,18 +71,21 @@ public class TechSupportOllamaBot extends ListenerAdapter {
         if (sender.equals(event.getJDA().getSelfUser())) return;
         if (event.getChannelType() == ChannelType.TEXT && !channel.getName().equalsIgnoreCase(channelToWatch)) return;
 
+        var originalMessage = event.getMessage().getContentDisplay();
+        if (moderate_message(event, originalMessage, channel, sender)) return;
+
         try {
-            String ollamaReply = ollamaClient.sendMessage(event.getMessage().getContentDisplay());
+            String ollamaReply = ollamaClient.sendMessage(originalMessage);
             String baseReply = String.format("Dear <@%s>, ", sender.getId());
 
             String newYearAddition;
             boolean isFirstMessage = !greetedUsers.contains(sender.getId());
 
             if (isFirstMessage) {
-                newYearAddition = " " + NEW_YEAR_GREETING;
+                newYearAddition = " " + Constants.NEW_YEAR_GREETING;
                 greetedUsers.add(sender.getId());
             } else {
-                newYearAddition = " " + NEW_YEAR_REMINDER;
+                newYearAddition = " " + Constants.NEW_YEAR_REMINDER;
             }
 
             String finalReply = baseReply + newYearAddition + "\n\n" + ollamaReply;
@@ -107,9 +94,19 @@ public class TechSupportOllamaBot extends ListenerAdapter {
         } catch (Exception e) {
             logger.error("Error processing message", e);
             String errorReply = String.format("Dear <@%s>, I apologize, but I encountered an error. %s",
-                    sender.getId(), NEW_YEAR_REMINDER);
+                    sender.getId(), Constants.NEW_YEAR_REMINDER);
             channel.sendMessage(errorReply).queue();
         }
+    }
+
+    private static boolean moderate_message(MessageReceivedEvent event, String originalMessage, MessageChannelUnion channel, User sender) {
+        boolean flagged = moderationClient.isFlagged(originalMessage);
+        if (flagged) {
+            event.getMessage().delete().queue();
+            channel.sendMessage(sender.getAsMention() + Constants.Moderator.VIOLATE_MESSAGE).queue();
+            return true;
+        }
+        return false;
     }
 
     private static String readFileContents(String resourcePath) {
